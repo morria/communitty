@@ -19,15 +19,12 @@ require(['jquery', 'underscore', 'terminal'],
     var connection =
         new WebSocket('ws://' + location.host + '/term');
 
-    // connection.binaryType = 'arraybuffer';
-    // connection.binaryType = 'blob';
-
     connection.onerror = function(event) {
-        console.error(event);
+        console.log("onerror: ", event);
     }
 
     connection.onopen = function(event) {
-        console.log('open');
+        console.log('connection opened');
     }
 
     var terminal = new Terminal({
