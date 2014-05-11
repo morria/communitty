@@ -49,10 +49,8 @@ func main() {
   // termios.DontEcho()
   termios.Flush(os.Stdin.Fd())
 
-  /*
-  termiosPty := term.Termios(pty.Fd())
+  termiosPty := term.Termios(tty.Fd())
   termiosPty.MakeRaw()
-  */
 
   /*
   termios := term.NewTermios(int(pty.Fd()))
