@@ -7,7 +7,7 @@ import (
   "os"
   "os/exec"
   "service"
-  "termios"
+  "term"
 )
 
 func main() {
@@ -27,18 +27,39 @@ func main() {
     }
   }()
 
-  // Get and set termios properties
-  termios := termios.Termios()
-  termios.MakeRaw()
-  termios.DontEcho()
-  termios.TCSAFlush(os.Stdin.Fd())
+  go func() {
+    channel := term.TrapWinsize()
+    select {
+    case _ = <-channel:
+      row, col := term.GetWinsizeInChar()
+      println(row, col)
+    }
+  }()
 
   // Run the shell on the pseudo-terminal
   shell := exec.Command(os.Getenv("SHELL"))
-  pty, err := pty.Start(shell)
+  tty, pty, err := pty.Start(shell)
   if err != nil {
     panic(err)
   }
+
+  // Get and set termios properties
+  termios := term.Termios(os.Stdin.Fd())
+  termios.MakeRaw()
+  // termios.DontEcho()
+  termios.Flush(os.Stdin.Fd())
+
+  /*
+  termiosPty := term.Termios(pty.Fd())
+  termiosPty.MakeRaw()
+  */
+
+  /*
+  termios := term.NewTermios(int(pty.Fd()))
+  termios.Echo(false)
+  termios.MakeRaw(int(pty.Fd()))
+  termios.KeyPress(int(pty.Fd()))
+  */
 
   // Read from input and output channels, writing to
   // the local TTY and any websocket clients

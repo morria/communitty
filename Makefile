@@ -10,3 +10,4 @@ clean:
 deps:
 	export GOPATH=`pwd`; go get github.com/kr/pty
 	export GOPATH=`pwd`; go get code.google.com/p/go.net/websocket
+	# export GOPATH=`pwd`; go get github.com/gnanderson/Go-Term/term
