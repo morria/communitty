@@ -2,13 +2,26 @@ package service
 
 import (
   "code.google.com/p/go.net/websocket"
-  "fmt"
+  "encoding/base64"
+  "encoding/json"
 )
 
 type Client struct {
   ws *websocket.Conn
   server *Server
   channelMessage chan []byte
+  channelCommand chan string
+}
+
+type TerminalMessage struct {
+  Command string
+  Data string
+}
+
+type WindowSizeMessage struct {
+  Command string
+  Rows int
+  Cols int
 }
 
 const channelBufferSize = 256
@@ -23,31 +36,57 @@ func NewClient(ws *websocket.Conn, server *Server) *Client {
   }
 
   channelMessage := make(chan []byte, channelBufferSize)
+  channelCommand := make(chan string)
 
-  return &Client{ws, server, channelMessage}
+  return &Client{ws, server, channelMessage, channelCommand}
 }
 
+/**
+ *
+ */
 func (client *Client) Conn() *websocket.Conn {
   return client.ws
 }
 
+/**
+ *
+ */
 func (client *Client) Write(message []byte) {
-  select {
-  case client.channelMessage <- message:
-  default:
-    client.server.Remove(client)
-    err := fmt.Errorf("client is disconnected")
-    if err != nil {
-      panic(err)
-    }
+  terminalMessage := TerminalMessage{
+    "Terminal",
+    base64.StdEncoding.EncodeToString(message),
   }
+
+  bytes, err := json.Marshal(terminalMessage)
+  if err != nil {
+    panic(err)
+  }
+
+  client.channelCommand <- string(bytes[:])
+}
+
+/**
+ * Set the window size
+ */
+func (client *Client) SetWindowSize(rows, cols uint16) {
+  windowSize := WindowSizeMessage{
+    "WindowSize",
+    int(rows),
+    int(cols),
+  }
+
+  bytes, err := json.Marshal(windowSize)
+  if err != nil {
+    panic(err)
+  }
+  client.channelCommand <- string(bytes[:])
 }
 
 func (client *Client) Listen() {
   for {
     select {
-    case message := <-client.channelMessage:
-      websocket.Message.Send(client.ws, string(message[:]))
+    case command := <-client.channelCommand:
+      websocket.JSON.Send(client.ws, command)
     }
   }
 }

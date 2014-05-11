@@ -11,9 +11,11 @@ import (
 )
 
 func main() {
+  // Get the current screen dimensions
+  rows, cols := term.GetWindowSize(os.Stdin.Fd())
 
   // Listen on websocket at /term
-  server := service.NewServer("/term")
+  server := service.NewServer("/term", rows, cols)
   go server.Listen()
 
   // Serve static webapp
@@ -27,37 +29,41 @@ func main() {
     }
   }()
 
-  go func() {
-    channel := term.TrapWinsize()
-    select {
-    case _ = <-channel:
-      row, col := term.GetWinsizeInChar()
-      println(row, col)
-    }
-  }()
 
   // Run the shell on the pseudo-terminal
   shell := exec.Command(os.Getenv("SHELL"))
-  tty, pty, err := pty.Start(shell)
+
+  // Get a pseudo-terminal and run the command
+  // on it
+  pty, err := pty.Start(shell)
   if err != nil {
     panic(err)
   }
 
-  // Get and set termios properties
+  // Make STDIN a raw device
   termios := term.Termios(os.Stdin.Fd())
   termios.MakeRaw()
-  // termios.DontEcho()
   termios.Flush(os.Stdin.Fd())
 
-  termiosPty := term.Termios(tty.Fd())
-  termiosPty.MakeRaw()
+  // Forward window-size changes to the PTY and
+  // clients
+  go func() {
+    channel := term.TrapWinsize()
+    select {
+    case _ = <-channel:
+      // Get the new size of the window
+      newRows, newCols := term.GetWindowSize(os.Stdin.Fd())
 
-  /*
-  termios := term.NewTermios(int(pty.Fd()))
-  termios.Echo(false)
-  termios.MakeRaw(int(pty.Fd()))
-  termios.KeyPress(int(pty.Fd()))
-  */
+      // Set the pseudo-terminal size
+      term.SetWindowSize(pty.Fd(), newRows, newCols)
+
+      // Set the size for all clients
+      server.SetWindowSize(newRows, newCols)
+    }
+  }()
+
+  // Set the initial window size
+  term.SetWindowSize(pty.Fd(), rows, cols)
 
   // Read from input and output channels, writing to
   // the local TTY and any websocket clients

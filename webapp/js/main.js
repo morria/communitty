@@ -24,7 +24,6 @@ require(['jquery', 'underscore', 'terminal'],
     }
 
     connection.onopen = function(event) {
-        console.log('connection opened');
     }
 
     var terminal = new Terminal({
@@ -39,11 +38,17 @@ require(['jquery', 'underscore', 'terminal'],
 
     terminal.open($('#terminal').get(0));
 
-    console.log(connection);
-
     connection.onmessage = _.bind(function(message) {
-      console.log(message);
-      terminal.write(message.data);
+      // Yeah, we're doing this
+      var command = JSON.parse(JSON.parse(message.data))
+
+      if ("WindowSize" === command.Command) {
+        terminal.resize(command.Cols, command.Rows);
+
+      } else if ("Terminal" === command.Command) {
+        terminal.write(atob(command.Data));
+      }
+
     }, this);
 
   }

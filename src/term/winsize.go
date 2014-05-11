@@ -58,11 +58,11 @@ var ChanWinsize = make(chan int) // Allocate a channel for TrapWinsize()
 // === Get
 
 // Gets the window size using the TIOCGWINSZ ioctl() call on the tty device.
-func GetWinsize() (*winsize, error) {
+func GetWinsize(fd uintptr) (*winsize, error) {
 	ws := new(winsize)
 
 	r1, _, errno := syscall.Syscall(syscall.SYS_IOCTL,
-		uintptr(syscall.Stdin),
+		fd,
 		uintptr(_TIOCGWINSZ),
 		uintptr(unsafe.Pointer(ws)),
 	)
@@ -73,9 +73,30 @@ func GetWinsize() (*winsize, error) {
 	return ws, nil
 }
 
+func SetWindowSize(fd uintptr, row, col uint16) (err error) {
+  winsize, err := GetWinsize(fd)
+  if err != nil {
+    panic(err)
+  }
+  winsize.Row = row
+  winsize.Col = col
+
+	r1, _, errno := syscall.Syscall(syscall.SYS_IOCTL,
+		fd,
+		uintptr(_TIOCSWINSZ),
+		uintptr(unsafe.Pointer(winsize)),
+	)
+
+	if int(r1) == -1 {
+		return os.NewSyscallError("GetWinsize", errno)
+	}
+
+	return nil
+}
+
 // Gets the number of rows and columns (in characters) on the window or terminal.
-func GetWinsizeInChar() (row, col int) {
-	ws, err := GetWinsize()
+func GetWindowSize(fd uintptr) (row, col uint16) {
+	ws, err := GetWinsize(fd)
 
 	// If there is any error, then to try get the values through environment.
 	// Else, it is used values by default.
@@ -88,9 +109,9 @@ func GetWinsizeInChar() (row, col int) {
 		} else {
 			iRow, err := strconv.Atoi(sRow)
 			if err == nil {
-				row = iRow
+				row = uint16(iRow)
 			} else {
-				row = _ROW
+				row = uint16(_ROW)
 			}
 		}
 
@@ -99,21 +120,22 @@ func GetWinsizeInChar() (row, col int) {
 		} else {
 			iCol, err := strconv.Atoi(sCol)
 			if err == nil {
-				col = iCol
+				col = uint16(iCol)
 			} else {
-				col = _COLUMN
+				col = uint16(_COLUMN)
 			}
 		}
 		return
 	}
 
-	return int(ws.Row), int(ws.Col)
+	return ws.Row, ws.Col
 }
 
 // Caughts a signal named SIGWINCH whenever the screen size changes.
 func TrapWinsize() (chan os.Signal) {
-  channel := make(chan os.Signal)
+  channel := make(chan os.Signal, 256)
   signal.Notify(channel, syscall.SIGWINCH)
+
   return channel
 
   /*
