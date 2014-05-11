@@ -23,7 +23,7 @@ require(['jquery', 'underscore', 'terminal'],
     // connection.binaryType = 'blob';
 
     connection.onerror = function(event) {
-        console.err(event);
+        console.error(event);
     }
 
     connection.onopen = function(event) {

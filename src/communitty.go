@@ -47,11 +47,11 @@ func main() {
   go func() {
     data := make([]byte, 1024)
     for {
-      _, err := os.Stdin.Read(data)
+      bytesRead, err := os.Stdin.Read(data)
       if err != nil {
         panic(err)
       }
-      channelInput <- data
+      channelInput <- data[0:bytesRead]
       // pty.Write(data);
     }
   }()
@@ -61,11 +61,11 @@ func main() {
   go func() {
     data := make([]byte, 1024)
     for {
-      _, err := pty.Read(data)
+      bytesRead, err := pty.Read(data)
       if err != nil {
         panic(err)
       }
-      channelOutput <- data
+      channelOutput <- data[0:bytesRead]
       // os.Stdout.Write(data);
     }
   }()
@@ -75,7 +75,7 @@ func main() {
       select {
       case input := <-channelInput:
         pty.Write(input)
-        server.Write(input)
+        // server.Write(input)
       case output := <-channelOutput:
         os.Stdout.Write(output)
         server.Write(output)
