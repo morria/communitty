@@ -1,4 +1,4 @@
-all: deps
+all:
 	export GOPATH=`pwd`; go build src/communitty.go
 
 clean:
