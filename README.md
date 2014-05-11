@@ -15,7 +15,7 @@ Running
 
 To run the service, build and then run
 
-    communitty
+    ./communitty
 
 It'll respawn your shell and serve your TTY via
 
