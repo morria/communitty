@@ -29,6 +29,9 @@ func main() {
     }
   }()
 
+  // Get the original termios so we can reset
+  // once we're done
+  originalTermios := term.NewTermios(os.Stdin.Fd())
 
   // Run the shell on the pseudo-terminal
   shell := exec.Command(os.Getenv("SHELL"))
@@ -41,9 +44,18 @@ func main() {
   }
 
   // Make STDIN a raw device
+  /*
   termios := term.Termios(os.Stdin.Fd())
   termios.MakeRaw()
   termios.Flush(os.Stdin.Fd())
+  */
+
+  // Get new termios so we can fuck shit up
+  termios := term.NewTermios(os.Stdin.Fd())
+  termios.MakeRaw();
+  // termios.Echo(false);
+  // termios.Magic();
+  termios.Flush();
 
   // Forward window-size changes to the PTY and
   // clients
@@ -91,4 +103,7 @@ func main() {
   if nil != err {
     panic(err)
   }
+
+  // Reset the original terminal state
+  originalTermios.Flush();
 }
