@@ -56,6 +56,7 @@ func main() {
   // termios.Echo(false);
   // termios.Magic();
   termios.Flush();
+  termios.Print();
 
   // Forward window-size changes to the PTY and
   // clients
