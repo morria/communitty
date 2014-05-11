@@ -131,22 +131,11 @@ func GetWindowSize(fd uintptr) (row, col uint16) {
 	return ws.Row, ws.Col
 }
 
-// Caughts a signal named SIGWINCH whenever the screen size changes.
+/**
+ *
+ */
 func TrapWinsize() (chan os.Signal) {
   channel := make(chan os.Signal, 256)
   signal.Notify(channel, syscall.SIGWINCH)
-
   return channel
-
-  /*
-	var sig os.Signal
-	go func() {
-		for sig = range signal.Incoming {
-			// if sig.(os.UnixSignal) == syscall.SIGWINCH {
-			if sig == syscall.SIGWINCH {
-				ChanWinsize <- 1 // Send a signal
-			}
-		}
-	}()
-  */
 }

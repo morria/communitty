@@ -4,6 +4,7 @@ package term
 #include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
+// FILE *getStdout() { return stdout; }
 */
 import "C"
 
@@ -17,9 +18,10 @@ type termios struct {
 	wrap *_Ctype_struct_termios
 }
 
-func NewTermios(fd uintptr) *termios {
+func GetTermios(fd uintptr) *termios {
   ios := termios{int(fd), new(_Ctype_struct_termios)}
   ios.tcgetattr()
+  // C.setbuf(C.getStdout(), nil);
   return &ios;
 }
 
@@ -106,7 +108,7 @@ func (tc *termios) Echo(echo bool) {
 
 // Sets the terminal to single-character mode.
 func (tc *termios)KeyPress(fd uintptr) {
-	newSettings := NewTermios(fd)
+	newSettings := GetTermios(fd)
 	tc.CopyTo(newSettings)
 
 	// Disable canonical mode, and set buffer size to 1 byte.
