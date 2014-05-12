@@ -19,6 +19,6 @@ To run the service, build and then run
 
 It'll respawn your shell and serve your TTY via
 
-    http://localhost:3000/
+    http://localhost:9000/
 
 The served data is read-only.
