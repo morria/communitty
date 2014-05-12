@@ -6,6 +6,9 @@ import (
   "encoding/json"
 )
 
+/**
+ *
+ */
 type Client struct {
   ws *websocket.Conn
   server *Server
@@ -13,11 +16,17 @@ type Client struct {
   channelCommand chan string
 }
 
+/**
+ *
+ */
 type TerminalMessage struct {
   Command string
   Data string
 }
 
+/**
+ *
+ */
 type WindowSizeMessage struct {
   Command string
   Rows int
@@ -26,6 +35,9 @@ type WindowSizeMessage struct {
 
 const channelBufferSize = 256
 
+/**
+ *
+ */
 func NewClient(ws *websocket.Conn, server *Server) *Client {
   if ws == nil {
     panic("ws cannot be nil")
@@ -82,6 +94,9 @@ func (client *Client) SetWindowSize(rows, cols uint16) {
   client.channelCommand <- string(bytes[:])
 }
 
+/**
+ *
+ */
 func (client *Client) Listen() {
   for {
     select {
