@@ -5,6 +5,7 @@ Building
 
 To build the service, run
 
+    sudo yum install go
     make deps
     make
 
