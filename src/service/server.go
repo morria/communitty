@@ -64,8 +64,7 @@ func (server *Server) Write(message []byte)(int, error) {
  */
 func (server *Server) SetWindowSize(rows, cols uint16)(error) {
   for _, client := range server.clients {
-    client.SetWindowSize(
-      server.windowRows, server.windowCols)
+    client.SetWindowSize(rows, cols)
   }
   return nil
 }

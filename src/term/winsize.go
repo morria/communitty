@@ -135,7 +135,7 @@ func GetWindowSize(fd uintptr) (row, col uint16) {
  *
  */
 func TrapWinsize() (chan os.Signal) {
-  channel := make(chan os.Signal, 256)
+  channel := make(chan os.Signal)
   signal.Notify(channel, syscall.SIGWINCH)
   return channel
 }

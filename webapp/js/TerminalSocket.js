@@ -28,12 +28,19 @@ function (_, $, Websocket) {
         onSocketMessage: function(event) {
             var command = JSON.parse(JSON.parse(event.data))
 
-            if ("WindowSize" === command.Command) {
-                this.terminal.resize(command.Cols, command.Rows);
-
-            } else if ("Terminal" === command.Command) {
-                this.terminal.write(atob(command.Data));
+            switch (command.Command) {
+                case "Terminal":
+                    this.terminal.write(atob(command.Data));
+                    break;
+                case "WindowSize":
+                    this.terminalResize(command.Cols, command.Rows);
+                    break;
             }
+        },
+
+        terminalResize: function(cols, rows) {
+            this.terminal.resize(cols, rows);
+            console.log("resize", rows, cols);
         },
 
         /**

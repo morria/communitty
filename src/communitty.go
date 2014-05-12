@@ -47,9 +47,11 @@ func tail(file *os.File, withData func([]byte)) {
  * on the given channel
  */
 func onChannelData(channel chan os.Signal, onData func(os.Signal)) {
-  select {
-  case data := <-channel:
-    onData(data)
+  for {
+    select {
+    case data := <-channel:
+      onData(data)
+    }
   }
 }
 
