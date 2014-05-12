@@ -18,6 +18,7 @@ require(['jquery', 'underscore', 'terminal', 'TerminalSocket'],
   function($, _, Terminal, TerminalSocket) {
     new TerminalSocket(
       'ws://' + location.host + '/term',
-      $('#terminal'));
+      $('#terminal'),
+      $('#messages'));
   }
 );

@@ -4,6 +4,7 @@ body {
 }
 
 #terminal {
+    display: none;
     background-color: #000;
     font-family: monospace;
     font-size: 14px;
@@ -11,4 +12,24 @@ body {
     padding: 5px;
     border-radius: 5px;
     display: inline-block;
+}
+
+#messages {
+    position: absolute;
+    top: 100px;
+    width: 100%;
+
+    .message {
+        margin: 0 auto;
+        display: none;
+
+        label {
+            font-size: 22px;
+            font-family: Helvetica, sans-serif;
+            color: #aaa;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 8px;
+        }
+    }
 }
