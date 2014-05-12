@@ -96,6 +96,9 @@ func main() {
   // Start serving on port 9000 and listening for clients
   server := serve(9000, rows, cols)
 
+  hostName, _ := os.Hostname()
+  println("Sharing at http://" + hostName + ":9000");
+
   // Make STDIN a raw device
   makeRaw(os.Stdin)
 
@@ -144,4 +147,6 @@ func main() {
 
   // Reset the original terminal state
   originalTermios.Flush();
+
+  println("No longer sharing");
 }
