@@ -74,7 +74,7 @@ func serve(port int, rows, cols uint16) (server *service.Server) {
   go server.Listen()
 
   // Serve static webapp
-  http.Handle("/", http.FileServer(http.Dir("./webapp")))
+  http.Handle("/", http.FileServer(http.Dir("./communitty-webapp")))
 
   go func() {
     err := http.ListenAndServe(":" + strconv.Itoa(port), nil)
