@@ -90,6 +90,7 @@ func serve(port int, rows, cols uint16) (server *service.Server) {
  *
  */
 func main() {
+
   // Get the current screen dimensions
   rows, cols := term.GetWindowSize(os.Stdin.Fd())
 
