@@ -94,11 +94,13 @@ func main() {
   // Get the current screen dimensions
   rows, cols := term.GetWindowSize(os.Stdin.Fd())
 
+  port := 10000
+
   // Start serving on port 9000 and listening for clients
-  server := serve(9000, rows, cols)
+  server := serve(port, rows, cols)
 
   hostName, _ := os.Hostname()
-  println("Sharing at http://" + hostName + ":9000");
+  println("Sharing at http://" + hostName + ":" + strconv.Itoa(port));
 
   // Make STDIN a raw device
   makeRaw(os.Stdin)

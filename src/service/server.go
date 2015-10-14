@@ -95,6 +95,7 @@ func (server *Server) Listen() {
       server.clients = append(server.clients, client)
       client.SetWindowSize(
         server.windowRows, server.windowCols)
+      println("client connected");
     case client := <-server.channelRemove:
       panic(client)
       // server.clients.PushBack(client)
