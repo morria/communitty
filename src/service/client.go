@@ -1,7 +1,7 @@
 package service
 
 import (
-  "code.google.com/p/go.net/websocket"
+  "golang.org/x/net/websocket"
   "encoding/base64"
   "encoding/json"
 )
