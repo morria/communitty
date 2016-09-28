@@ -1,5 +1,8 @@
 CommuniTTY shares your TTY via the browser so people can see what you're up to.
 
+See it in action at https://www.youtube.com/watch?v=AiF1o-DcxBI.
+
+
 Building
 ========
 
