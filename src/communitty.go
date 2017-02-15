@@ -23,7 +23,7 @@ func panicReset(err error) {
 }
 
 /**
- * Containuously read the given file passing
+ * Continuously read the given file passing
  * any data read to the given function.
  */
 func tail(file *os.File, withData func([]byte)) {
